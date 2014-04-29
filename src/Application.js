@@ -119,7 +119,7 @@ const EvernoteGClient = new Lang.Class({
         this._headerBar.pack_start(this._newNoteButton);
 
         this._searchEntry = new Gtk.SearchEntry();
-        this._searchEntry.width_request = 128;
+        this._searchEntry.width_request = 192;
         this._searchEntry.connect("focus-in-event", Lang.bind(this, this._searchEntry_onFocusIn));
         this._searchEntry.connect("focus-out-event", Lang.bind(this, this._searchEntry_onFocusOut));
         this._searchEntry.connect("key-press-event", Lang.bind(this, this._searchEntry_onKeyPress));
@@ -257,9 +257,9 @@ const EvernoteGClient = new Lang.Class({
             return c/2 * (Math.sqrt(1 - t*t) + 1) + b;
         }
 
-        for (let i = 0; i < 192; i++)
+        for (let i = 0; i < 256; i++)
         {
-            this._searchEntry.width_request = easeInOutCirc(i, 128, i, 256);
+            this._searchEntry.width_request = easeInOutCirc(i, 192, i, 384);
             Gtk.main_iteration();
         }
     },
@@ -273,9 +273,9 @@ const EvernoteGClient = new Lang.Class({
             return c/2 * (Math.sqrt(1 - t*t) + 1) + b;
         }
 
-        for (let i = 192; i >= 0; i--)
+        for (let i = 256; i >= 0; i--)
         {
-            this._searchEntry.width_request = easeInOutCirc(i, 128, i, 256);
+            this._searchEntry.width_request = easeInOutCirc(i, 192, i, 384);
             Gtk.main_iteration();
         }
     },
