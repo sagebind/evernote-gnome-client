@@ -1,0 +1,87 @@
+/* hide settings/login header */
+.header-wrapper, .header {
+    display: none !important;
+}
+
+/* fix settings layout */
+.main .tabs {
+    padding-top: 0 !important;
+}
+
+.main .panel {
+    padding-top: 24px !important;
+}
+
+/* hide notes toolbar */
+body > div > div > div > div:nth-child(2) {
+    display: none !important;
+}
+
+/* resize notes layout */
+body > div > div > div > div:nth-child(3) {
+    top: 0 !important;
+}
+
+/*.GM2YP5TCIX {
+    background-image: url("http://cdn1.dottech.org/wp-content/uploads/2012/11/Screenshot-4.png");
+    background-position: -186px -139px;
+    background-repeat: no-repeat;
+    background-size: 40%;
+    border-bottom: 2px solid #7ac141;
+    height: 50px;
+}
+
+.GM2YP5TCIX, .GM2YP5TCPP, .GM2YP5TCEQ {
+    background: #5fb337;
+}
+
+.GM2YP5TCPH {
+    visibility: hidden;
+}
+
+body > div:not([id]):not([class]) > div > div > div:nth-child(2) {
+    top: 0;
+}
+
+body > div:not([id]):not([class]) > div > div > div:nth-child(3) {
+    top: 52px;
+}
+
+div.GEDW4YLDOW, div.GEDW4YLDFP, div.GEDW4YLDKP {
+    background-color: #5fb336;
+    background-image: url('/redesign/global/img/header-bar.png');
+}
+
+div.Menu div.Menu-indicator .Icon {
+    margin: 24px 0;
+}
+
+div.Menu div.Menu-popover {
+    top: 52px;
+}
+
+div.Menu div.User {
+    line-height: 52px;
+}
+
+div.header, body:not(.wrapper-menu) div.header-inner {
+    height: auto;
+    margin: 0;
+}
+
+div.header-inner div.left {
+    display: none;
+}
+
+div.header-inner div.right {
+    height: 52px;
+}
+
+div.header-inner:before, body:not(.wrapper-menu) div.header-inner:after {
+    display: none;
+}
+
+img.GEDW4YLDHH {
+    background-image: url('/redesign/global/img/evernote-logo.png');
+    background-size: 165px 52px;
+}*/
