@@ -1,6 +1,7 @@
+const Gettext = imports.gettext;
+const Gdk = imports.gi.Gdk;
 const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
-const Gdk = imports.gi.Gdk;
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
 const Soup = imports.gi.Soup;
@@ -18,6 +19,10 @@ const EvernoteGClient = new Lang.Class({
 
     _init: function()
     {
+        Gettext.textdomain('evernote-gnome-client');
+        GLib.set_prgname('Evernote');
+        GLib.set_application_name("Evernote");
+
         this.parent({
             application_id: "org.coderstephen.evernote-gnome-client",
             flags: Gio.ApplicationFlags.FLAGS_NONE
@@ -250,6 +255,9 @@ const EvernoteGClient = new Lang.Class({
 
     _searchEntry_onFocusIn: function(widget, event, userData)
     {
+        if (widget.text != "")
+            return;
+
         let easeInOutCirc = function (t, b, c, d) {
             t /= d/2;
             if (t < 1) return -c/2 * (Math.sqrt(1 - t*t) - 1) + b;
@@ -266,6 +274,9 @@ const EvernoteGClient = new Lang.Class({
 
     _searchEntry_onFocusOut: function(widget, event, userData)
     {
+        if (widget.text != "")
+            return;
+
         let easeInOutCirc = function (t, b, c, d) {
             t /= d/2;
             if (t < 1) return -c/2 * (Math.sqrt(1 - t*t) - 1) + b;
