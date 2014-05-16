@@ -76,14 +76,16 @@ const MainWindow = new Lang.Class({
         // get the search query text
         let query = this._searchEntry.text;
 
+        let document = this._webFrame._webView.get_dom_document();
+
         // clear internal search box
-        this._webFrame._webView.execute_script("document.getElementsByClassName('GM2YP5TCDQ')[0].click();");
+        document.query_selector("img[width='16']").click();
 
         // populate search box with query
-        this._webFrame._webView.execute_script("document.getElementsByClassName('GM2YP5TCCCC')[0].value='" + query + "';");
+        document.query_selector("#gwt-debug-searchBox input").value = query;
 
         // execute search
-        this._webFrame._webView.execute_script("document.getElementById('gwt-debug-searchSubmit').click()");
+        document.query_selector("#gwt-debug-searchSubmit").click();
     },
 
     _onConfigureEvent: function(widget, event)
