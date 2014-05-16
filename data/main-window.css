@@ -3,15 +3,6 @@
     display: none !important;
 }
 
-/* fix settings layout */
-.main .tabs {
-    padding-top: 0 !important;
-}
-
-.main .panel {
-    padding-top: 24px !important;
-}
-
 /* hide notes toolbar */
 body > div > div > div > div:nth-child(2) {
     display: none !important;

@@ -1,0 +1,8 @@
+#!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $DIR
+
+GJS_PATH=$DIR
+echo "Import path: $GJS_PATH"
+
+gjs "$DIR/main.js"

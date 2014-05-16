@@ -1,7 +1,7 @@
 #!/usr/bin/gjs
 
 imports.searchPath.unshift('.');
-const EvernoteGClient = imports.Application;
+const Application = imports.Application;
 
-let app = new EvernoteGClient.EvernoteGClient();
+let app = new Application.Application();
 app.run(ARGV);

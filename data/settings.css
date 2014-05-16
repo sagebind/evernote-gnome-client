@@ -1,0 +1,35 @@
+html {
+    overflow: hidden !important;
+}
+
+body {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+#container, .main {
+    margin: 0 !important;
+    float: none !important;
+}
+
+.footer {
+    display: block !important;
+    float: none !important;
+}
+
+/* hide settings/login header */
+.header-wrapper, .header {
+    display: none !important;
+}
+
+/* fix settings layout */
+.main .tabs {
+    padding-top: 0 !important;
+}
+
+.main .panel {
+    display: block !important;
+    float: right !important;
+    width: auto !important;
+    padding-top: 24px !important;
+}
