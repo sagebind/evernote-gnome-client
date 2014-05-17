@@ -4,7 +4,6 @@ const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
-const Soup = imports.gi.Soup;
 
 const MainWindow = imports.MainWindow;
 const SettingsWindow = imports.SettingsWindow;

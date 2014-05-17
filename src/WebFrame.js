@@ -4,6 +4,7 @@ const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
+const Signals = imports.signals;
 const Soup = imports.gi.Soup;
 const WebKit = imports.gi.WebKit;
 
@@ -17,6 +18,11 @@ const WebFrame = new Lang.Class({
         this.widget = new Gtk.ScrolledWindow();
 
         this._webView = new WebKit.WebView();
+        this._webView.settings.enable_page_cache = true;
+        this._webView.settings.enable_smooth_scrolling = true;
+        this._webView.settings.enable_spell_checking = true;
+
+        this._webView.connect("document-load-finished", Lang.bind(this, this._onDocumentLoadFinished));
         this._webView.connect("notify::load-status", Lang.bind(this, this._onLoadStatus));
         this.widget.add(this._webView);
 
@@ -43,6 +49,8 @@ const WebFrame = new Lang.Class({
         // is the document ready?
         if (webView.load_status == 3)
         {
+            this.emit("load-finished", webView, userData);
+
             for (let stylesheet in this.stylesheets)
             {
                 // create a style element
@@ -62,5 +70,12 @@ const WebFrame = new Lang.Class({
                 }
             }
         }
+    },
+
+    _onDocumentLoadFinished: function(webView, webFrame, userData)
+    {
+        this.emit("document-loaded");
     }
 });
+
+Signals.addSignalMethods(WebFrame.prototype);
