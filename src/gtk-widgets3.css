@@ -1,0 +1,7 @@
+.web-frame GtkScrolledWindow {
+    background-color: white;
+}
+
+.loading {
+    opacity: 0.3;
+}

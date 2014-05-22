@@ -23,11 +23,15 @@ const NoteWindow = new Lang.Class({
         this._newNoteButton.connect("clicked", Lang.bind(this, this.newNote));
         this._headerBar.pack_start(this._newNoteButton);
 
-        this._nextNoteButton = new Gtk.Button({label: ">"});
+        this._nextNoteButton = new Gtk.Button({
+            image: new Gtk.Image({icon_name: "go-next-symbolic"})
+        });
         this._nextNoteButton.connect("clicked", Lang.bind(this, this.nextNote));
         this._headerBar.pack_end(this._nextNoteButton);
 
-        this._prevNoteButton = new Gtk.Button({label: "<"});
+        this._prevNoteButton = new Gtk.Button({
+            image: new Gtk.Image({icon_name: "go-previous-symbolic"})
+        });
         this._prevNoteButton.connect("clicked", Lang.bind(this, this.previousNote));
         this._headerBar.pack_end(this._prevNoteButton);
 
@@ -61,13 +65,33 @@ const NoteWindow = new Lang.Class({
         document.query_selector("#gwt-debug-nav .previousNoteIcon").click();
     },
 
+    getNoteTitle: function()
+    {
+        let titleElement = this._webFrame._webView.get_dom_document().query_selector("#gwt-debug-noteTitle");
+
+        if (titleElement)
+        {
+            return titleElement.innerText;
+        }
+
+        return undefined;
+    },
+
+    updateTitle: function()
+    {
+        let title = this.getNoteTitle();
+
+        if (title != undefined)
+        {
+            this._headerBar.title = title;
+        }
+    },
+
     _onDocumentLoaded: function()
     {
         let document = this._webFrame._webView.get_dom_document();
 
-        let noteTitle = document.query_selector("#gwt-debug-noteTitle");
-        if (noteTitle)
-            this._headerBar.title = noteTitle.innerText;
+        this.updateTitle();
 
         let noteCount = document.query_selector("#gwt-debug-nav span");
         if (noteCount)

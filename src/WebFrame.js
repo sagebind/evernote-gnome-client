@@ -15,7 +15,11 @@ const WebFrame = new Lang.Class({
 
     _init: function()
     {
-        this.widget = new Gtk.ScrolledWindow();
+        this.widget = new Gtk.Overlay();
+        this.widget.get_style_context().add_class("web-frame");
+
+        this._frame = new Gtk.ScrolledWindow();
+        this.widget.add(this._frame);
 
         this._webView = new WebKit.WebView();
         this._webView.settings.enable_page_cache = true;
@@ -24,7 +28,7 @@ const WebFrame = new Lang.Class({
 
         this._webView.connect("document-load-finished", Lang.bind(this, this._onDocumentLoadFinished));
         this._webView.connect("notify::load-status", Lang.bind(this, this._onLoadStatus));
-        this.widget.add(this._webView);
+        this._frame.add(this._webView);
 
         this._session = WebKit.get_default_session();
         Soup.Session.prototype.add_feature.call(this._session, new Soup.ProxyResolverDefault());
@@ -32,6 +36,15 @@ const WebFrame = new Lang.Class({
 
         this._cookieJar = new Soup.CookieJarDB({ filename: "../data/cookies.sqlite", read_only: false });
         Soup.Session.prototype.add_feature.call(this._session, this._cookieJar);
+
+        this._spinner = new Gtk.Spinner();
+        this.widget.add_overlay(this._spinner);
+        this.showSpinner();
+    },
+
+    getWindow: function()
+    {
+        return this._webView.get_main_frame().get_global_context();
     },
 
     navigate: function(uri)
@@ -42,6 +55,20 @@ const WebFrame = new Lang.Class({
     refresh: function()
     {
         this._webView.refresh();
+    },
+
+    showSpinner: function()
+    {
+        this._webView.get_style_context().add_class("loading");
+        this._spinner.start();
+        this._spinner.show();
+    },
+
+    hideSpinner: function()
+    {
+        this._spinner.hide();
+        this._spinner.stop();
+        this._webView.get_style_context().remove_class("loading");
     },
 
     _onLoadStatus: function(webView, userData)
@@ -70,10 +97,16 @@ const WebFrame = new Lang.Class({
                 }
             }
         }
+
+        else
+        {
+            this.showSpinner();
+        }
     },
 
     _onDocumentLoadFinished: function(webView, webFrame, userData)
     {
+        this.hideSpinner();
         this.emit("document-loaded");
     }
 });

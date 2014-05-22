@@ -27,6 +27,9 @@ const Application = new Lang.Class({
         // load settings
         this._loadSettings();
 
+        this.styles = new Gtk.CssProvider();
+        this.styles.load_from_path("gtk-widgets3.css");
+
         this.connect("startup", Lang.bind(this, this._onStartup));
         this.connect("activate", Lang.bind(this, this._onActivate));
     },
@@ -107,6 +110,9 @@ const Application = new Lang.Class({
 
         // create main window
         this._mainWindow = new MainWindow.MainWindow(this);
+        
+        let context = new Gtk.StyleContext();
+        context.add_provider_for_screen(this._mainWindow.get_screen(), this.styles, Gtk.STYLE_PROVIDER_PRIORITY_USER);
 
         // show window
         this._mainWindow.show_all();

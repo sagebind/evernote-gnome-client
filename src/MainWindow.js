@@ -1,5 +1,5 @@
-const Gettext = imports.gettext;
 const Gdk = imports.gi.Gdk;
+const Gettext = imports.gettext;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
@@ -52,8 +52,9 @@ const MainWindow = new Lang.Class({
 
         this._searchEntry = new Gtk.SearchEntry();
         this._searchEntry.width_request = 192;
-        this._searchEntry.connect("focus-in-event", Lang.bind(this, this._searchEntry_onFocusIn));
-        this._searchEntry.connect("focus-out-event", Lang.bind(this, this._searchEntry_onFocusOut));
+        this._searchEntryExpanded = false;
+        this._searchEntry.connect("focus-in-event", Lang.bind(this, this._expandSearchEntry));
+        this._searchEntry.connect("focus-out-event", Lang.bind(this, this._collapseSearchEntry));
         this._searchEntry.connect("key-press-event", Lang.bind(this, this._searchEntry_onKeyPress));
         this._headerBar.pack_end(this._searchEntry);
 
@@ -66,6 +67,7 @@ const MainWindow = new Lang.Class({
         this._webFrame._webView.connect("new-window-policy-decision-requested", Lang.bind(this, this._webView_onNewWindowRequested));
         this._webFrame._webView.connect("create-web-view", Lang.bind(this, this._webView_onCreateWebView));
         this._webFrame.connect("document-loaded", Lang.bind(this, this._webView_onDocumentLoaded));
+        this._webFrame.connect("load-finished", Lang.bind(this, this._webView_onLoadFinished));
 
         // add custom css
         this._webFrame.stylesheets.push("../data/main-window.css");
@@ -95,6 +97,52 @@ const MainWindow = new Lang.Class({
 
         // execute search
         document.query_selector("#gwt-debug-searchSubmit").click();
+    },
+
+    getSearchText: function()
+    {
+        let document = this._webFrame._webView.get_dom_document();
+        var searchText = "";
+
+        let lozengeContainer = document.query_selector("#gwt-debug-lozengeContainer");
+
+        if (lozengeContainer)
+        {
+            // get flag elements
+            let flagElements = lozengeContainer.query_selector_all(":scope > div:first-child > div > div");
+
+            if (flagElements)
+            {
+                for (var i = 0; i < flagElements.length; i++)
+                {
+                    log("element"+i);
+                    let typeElement = flagElements.item(i).query_selector("span:first-child");
+                    let valueElement = flagElements.item(i).query_selector("span:nth-child(2)");
+
+                    if (typeElement && valueElement)
+                    {
+                        if (searchText != "")
+                        {
+                            searchText += " ";
+                        }
+                        searchText += typeElement.innerText.toLowerCase() + valueElement.innerText;
+                    }
+                }
+            }
+        }
+
+        // get text search
+        let searchInput = document.query_selector("#gwt-debug-searchBox input");
+        if (searchInput && searchInput.value != "")
+        {
+            if (searchText != "")
+            {
+                searchText += " ";
+            }
+            searchText += searchInput.value;
+        }
+
+        return searchText;
     },
 
     _onConfigureEvent: function(widget, event)
@@ -154,11 +202,17 @@ const MainWindow = new Lang.Class({
         let noteTitle = document.query_selector("#gwt-debug-noteTitle");
         if (noteTitle)
             this._headerBar.subtitle = noteTitle.innerText;
+        
+        this._searchEntry.text = this.getSearchText();
     },
 
-    _searchEntry_onFocusIn: function(widget, event, userData)
+    _webView_onLoadFinished: function()
     {
-        if (widget.text != "")
+    },
+
+    _expandSearchEntry: function()
+    {
+        if (this._searchEntryExpanded)
             return;
 
         let easeInOutCirc = function (t, b, c, d)
@@ -174,11 +228,13 @@ const MainWindow = new Lang.Class({
             this._searchEntry.width_request = easeInOutCirc(i, 192, i, 384);
             Gtk.main_iteration();
         }
+
+        this._searchEntryExpanded = true;
     },
 
-    _searchEntry_onFocusOut: function(widget, event, userData)
+    _collapseSearchEntry: function()
     {
-        if (widget.text != "")
+        if (!this._searchEntryExpanded)
             return;
 
         let easeInOutCirc = function (t, b, c, d)
@@ -194,6 +250,8 @@ const MainWindow = new Lang.Class({
             this._searchEntry.width_request = easeInOutCirc(i, 192, i, 384);
             Gtk.main_iteration();
         }
+
+        this._searchEntryExpanded = false;
     },
 
     _searchEntry_onKeyPress: function(widget, event, userData)
