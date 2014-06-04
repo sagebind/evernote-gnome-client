@@ -1,3 +1,21 @@
+/**
+ * Copyright (c) 2014 Stephen Coakley <me@stephencoakley.com>
+ * 
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
 const Gettext = imports.gettext;
 const Gdk = imports.gi.Gdk;
 const Gio = imports.gi.Gio;
@@ -28,7 +46,7 @@ const Application = new Lang.Class({
         this._loadSettings();
 
         this.styles = new Gtk.CssProvider();
-        this.styles.load_from_path("gtk-widgets3.css");
+        this.styles.load_from_path("../data/gtk-widgets3.css");
 
         this.connect("startup", Lang.bind(this, this._onStartup));
         this.connect("activate", Lang.bind(this, this._onActivate));
@@ -46,8 +64,8 @@ const Application = new Lang.Class({
 
         aboutDialog.authors = ["Stephen Coakley <me@stephencoakley.com>"];
         aboutDialog.program_name = "Evernote Gnome Client";
-        aboutDialog.comments = "A client for Evernote Web that integrates nicely with Gnome.";
-        aboutDialog.copyright = "Copyright " + String.fromCharCode(0x00A9) + " 2014 Stephen Coakley.";
+        aboutDialog.comments = "A client for Evernote Web that integrates nicely with GNOME.";
+        aboutDialog.copyright = "Created by Stephen Coakley. Evernote Copyright " + String.fromCharCode(0x00A9) + " 2014 Evernote Corporation. All rights reserved.";
         aboutDialog.license_type = Gtk.License.GPL_2_0;
         aboutDialog.logo_icon_name = "chrome-lbfehkoinhhcknnbdgnnmjhiladcgbol-Default";
         aboutDialog.version = "0.1";
@@ -62,6 +80,11 @@ const Application = new Lang.Class({
         });
     },
 
+    showHelp: function()
+    {
+        GLib.spawn_command_line_async("xdg-open https://evernote.com/contact/support?from=evernote");
+    },
+
     quit: function()
     {
         this._mainWindow.destroy();
@@ -72,19 +95,24 @@ const Application = new Lang.Class({
     {
         let menu = new Gio.Menu();
         menu.append("Settings", "app.settings");
+        menu.append("Help", "app.help");
         menu.append("About", "app.about");
         menu.append("Quit","app.quit");
         this.set_app_menu(menu);
 
-        let settingsAction = new Gio.SimpleAction ({ name: "settings" });
+        let settingsAction = new Gio.SimpleAction({ name: "settings" });
         settingsAction.connect("activate", Lang.bind(this, this.showSettings));
         this.add_action(settingsAction);
 
-        let aboutAction = new Gio.SimpleAction ({ name: "about" });
+        let aboutAction = new Gio.SimpleAction({ name: "help" });
+        aboutAction.connect("activate", Lang.bind(this, this.showHelp));
+        this.add_action(aboutAction);
+
+        let aboutAction = new Gio.SimpleAction({ name: "about" });
         aboutAction.connect("activate", Lang.bind(this, this.showAbout));
         this.add_action(aboutAction);
 
-        let quitAction = new Gio.SimpleAction ({ name: "quit" });
+        let quitAction = new Gio.SimpleAction({ name: "quit" });
         quitAction.connect("activate", Lang.bind(this, this.quit));
         this.add_action(quitAction);
     },

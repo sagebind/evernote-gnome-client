@@ -1,3 +1,21 @@
+/**
+ * Copyright (c) 2014 Stephen Coakley <me@stephencoakley.com>
+ * 
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
 const Gdk = imports.gi.Gdk;
 const Gettext = imports.gettext;
 const GLib = imports.gi.GLib;
@@ -10,13 +28,12 @@ const WebFrame = imports.WebFrame;
 
 const MainWindow = new Lang.Class({
     Name: "MainWindow",
-    Extends: Gtk.ApplicationWindow,
+    Extends: Gtk.Window,
 
     _init: function(application)
     {
         this.parent({
             application: application,
-            title: "Evernote",
             icon_name: "chrome-lbfehkoinhhcknnbdgnnmjhiladcgbol-Default"
         });
 
@@ -51,23 +68,18 @@ const MainWindow = new Lang.Class({
         this._headerBar.pack_start(this._newNoteButton);
 
         this._searchEntry = new Gtk.SearchEntry();
-        this._searchEntry.width_request = 192;
-        this._searchEntryExpanded = false;
-        this._searchEntry.connect("focus-in-event", Lang.bind(this, this._expandSearchEntry));
-        this._searchEntry.connect("focus-out-event", Lang.bind(this, this._collapseSearchEntry));
-        this._searchEntry.connect("key-press-event", Lang.bind(this, this._searchEntry_onKeyPress));
+        this._searchEntry.width_request = 320;
+        this._searchEntry.connect("search-changed", Lang.bind(this, this._onSearchChanged));
         this._headerBar.pack_end(this._searchEntry);
 
         // create a web frame
         this._webFrame = new WebFrame.WebFrame();
-        this.add(this._webFrame.widget);
+        this.add(this._webFrame);
 
         // listen for popup requests
         this._webFrame._webView.connect("navigation-policy-decision-requested", Lang.bind(this, this._webView_onNavigationRequested));
-        this._webFrame._webView.connect("new-window-policy-decision-requested", Lang.bind(this, this._webView_onNewWindowRequested));
         this._webFrame._webView.connect("create-web-view", Lang.bind(this, this._webView_onCreateWebView));
         this._webFrame.connect("document-loaded", Lang.bind(this, this._webView_onDocumentLoaded));
-        this._webFrame.connect("load-finished", Lang.bind(this, this._webView_onLoadFinished));
 
         // add custom css
         this._webFrame.stylesheets.push("../data/main-window.css");
@@ -82,10 +94,9 @@ const MainWindow = new Lang.Class({
         document.query_selector("#gwt-debug-newNoteButton").click();
     },
 
-    execSearch: function()
+    search: function(query)
     {
-        // get the search query text
-        let query = this._searchEntry.text;
+        log("Executing search: \"" + query + "\"");
 
         let document = this._webFrame._webView.get_dom_document();
 
@@ -99,7 +110,7 @@ const MainWindow = new Lang.Class({
         document.query_selector("#gwt-debug-searchSubmit").click();
     },
 
-    getSearchText: function()
+    getCurrentSearchText: function()
     {
         let document = this._webFrame._webView.get_dom_document();
         var searchText = "";
@@ -115,17 +126,22 @@ const MainWindow = new Lang.Class({
             {
                 for (var i = 0; i < flagElements.length; i++)
                 {
-                    log("element"+i);
                     let typeElement = flagElements.item(i).query_selector("span:first-child");
                     let valueElement = flagElements.item(i).query_selector("span:nth-child(2)");
 
                     if (typeElement && valueElement)
                     {
+                        var valueText = String(valueElement.innerText);
+                        if (valueText.indexOf(" ") > -1)
+                        {
+                            valueText = "\"" + valueText + "\"";
+                        }
+
                         if (searchText != "")
                         {
                             searchText += " ";
                         }
-                        searchText += typeElement.innerText.toLowerCase() + valueElement.innerText;
+                        searchText += typeElement.innerText.toLowerCase() + valueText;
                     }
                 }
             }
@@ -143,6 +159,12 @@ const MainWindow = new Lang.Class({
         }
 
         return searchText;
+    },
+
+    _updateSearchEntry: function()
+    {
+        this._updatingSearchEntry = true;
+        this._searchEntry.text = this.getCurrentSearchText();
     },
 
     _onConfigureEvent: function(widget, event)
@@ -175,18 +197,7 @@ const MainWindow = new Lang.Class({
 
     _webView_onNavigationRequested: function(webView, frame, request, navigationAction, policyDecision, userData)
     {
-        log("Internal navigation requested: " + request.uri);
-    },
-
-    _webView_onNewWindowRequested: function(webView, frame, request, navigationAction, policyDecision, userData)
-    {
-        log("Opening external link: " + request.uri);
-
-        // open url in default browser
-        GLib.spawn_command_line_async("xdg-open " + request.uri);
-
-        policyDecision.ignore();
-        return true;
+        log("Loading page: " + request.uri);
     },
 
     _webView_onCreateWebView: function(webView, frame, userData)
@@ -200,74 +211,21 @@ const MainWindow = new Lang.Class({
     {
         let document = this._webFrame._webView.get_dom_document();
         let noteTitle = document.query_selector("#gwt-debug-noteTitle");
-        if (noteTitle)
-            this._headerBar.subtitle = noteTitle.innerText;
+        //if (noteTitle)
+            //this._headerBar.subtitle = noteTitle.innerText;
         
-        this._searchEntry.text = this.getSearchText();
+        this._updateSearchEntry();
     },
 
-    _webView_onLoadFinished: function()
+    _onSearchChanged: function(searchEntry, userData)
     {
-    },
+        log("Search changed: \"" + searchEntry.text + "\"");
 
-    _expandSearchEntry: function()
-    {
-        if (this._searchEntryExpanded)
-            return;
-
-        let easeInOutCirc = function (t, b, c, d)
+        if (!this._updatingSearchEntry)
         {
-            t /= d/2;
-            if (t < 1) return -c/2 * (Math.sqrt(1 - t*t) - 1) + b;
-            t -= 2;
-            return c/2 * (Math.sqrt(1 - t*t) + 1) + b;
+            this.search(searchEntry.text);
         }
 
-        for (let i = 0; i < 256; i++)
-        {
-            this._searchEntry.width_request = easeInOutCirc(i, 192, i, 384);
-            Gtk.main_iteration();
-        }
-
-        this._searchEntryExpanded = true;
-    },
-
-    _collapseSearchEntry: function()
-    {
-        if (!this._searchEntryExpanded)
-            return;
-
-        let easeInOutCirc = function (t, b, c, d)
-        {
-            t /= d/2;
-            if (t < 1) return -c/2 * (Math.sqrt(1 - t*t) - 1) + b;
-            t -= 2;
-            return c/2 * (Math.sqrt(1 - t*t) + 1) + b;
-        }
-
-        for (let i = 256; i >= 0; i--)
-        {
-            this._searchEntry.width_request = easeInOutCirc(i, 192, i, 384);
-            Gtk.main_iteration();
-        }
-
-        this._searchEntryExpanded = false;
-    },
-
-    _searchEntry_onKeyPress: function(widget, event, userData)
-    {
-        let keyval = event.get_keyval()[1];
-
-        if (keyval == Gdk.KEY_Escape)
-        {
-            return true;
-        }
-
-        else if (keyval == Gdk.KEY_Return)
-        {
-            this.execSearch();
-            return true;
-        }
-        return false;
+        this._updatingSearchEntry = false;
     }
 });

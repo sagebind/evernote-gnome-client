@@ -1,3 +1,21 @@
+/**
+ * Copyright (c) 2014 Stephen Coakley <me@stephencoakley.com>
+ * 
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
 const Gettext = imports.gettext;
 const Gdk = imports.gi.Gdk;
 const Gio = imports.gi.Gio;
@@ -11,23 +29,25 @@ const WebKit = imports.gi.WebKit;
 
 const WebFrame = new Lang.Class({
     Name: "WebFrame",
+    Extends: Gtk.Overlay,
     stylesheets: [],
 
     _init: function()
     {
-        this.widget = new Gtk.Overlay();
-        this.widget.get_style_context().add_class("web-frame");
+        this.parent();
+        this.get_style_context().add_class("web-frame");
 
         this._frame = new Gtk.ScrolledWindow();
-        this.widget.add(this._frame);
+        this.add(this._frame);
 
         this._webView = new WebKit.WebView();
         this._webView.settings.enable_page_cache = true;
         this._webView.settings.enable_smooth_scrolling = true;
         this._webView.settings.enable_spell_checking = true;
 
-        this._webView.connect("document-load-finished", Lang.bind(this, this._onDocumentLoadFinished));
         this._webView.connect("notify::load-status", Lang.bind(this, this._onLoadStatus));
+        this._webView.connect("document-load-finished", Lang.bind(this, this._onDocumentLoadFinished));
+        this._webView.connect("new-window-policy-decision-requested", Lang.bind(this, this._onNewWindowRequested));
         this._frame.add(this._webView);
 
         this._session = WebKit.get_default_session();
@@ -38,8 +58,8 @@ const WebFrame = new Lang.Class({
         Soup.Session.prototype.add_feature.call(this._session, this._cookieJar);
 
         this._spinner = new Gtk.Spinner();
-        this.widget.add_overlay(this._spinner);
-        this.showSpinner();
+        this.add_overlay(this._spinner);
+        this._showSpinner();
     },
 
     getWindow: function()
@@ -57,14 +77,14 @@ const WebFrame = new Lang.Class({
         this._webView.refresh();
     },
 
-    showSpinner: function()
+    _showSpinner: function()
     {
         this._webView.get_style_context().add_class("loading");
         this._spinner.start();
         this._spinner.show();
     },
 
-    hideSpinner: function()
+    _hideSpinner: function()
     {
         this._spinner.hide();
         this._spinner.stop();
@@ -98,16 +118,27 @@ const WebFrame = new Lang.Class({
             }
         }
 
-        else
+        else if (webView.load_status < 2)
         {
-            this.showSpinner();
+            this._showSpinner();
         }
     },
 
     _onDocumentLoadFinished: function(webView, webFrame, userData)
     {
-        this.hideSpinner();
+        this._hideSpinner();
         this.emit("document-loaded");
+    },
+
+    _onNewWindowRequested: function(webView, frame, request, navigationAction, policyDecision, userData)
+    {
+        log("Opening external link: " + request.uri);
+
+        // open url in default browser
+        GLib.spawn_command_line_async("xdg-open " + request.uri);
+
+        policyDecision.ignore();
+        return true;
     }
 });
 

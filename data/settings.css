@@ -1,35 +1,63 @@
-html {
-    overflow: hidden !important;
-}
+/**
+ * Copyright (c) 2014 Stephen Coakley <me@stephencoakley.com>
+ * 
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 
 body {
     overflow-x: hidden !important;
-    overflow-y: auto !important;
+    overflow-y: visible !important;
+    background: #fff !important;
 }
 
-#container, .main {
-    margin: 0 !important;
-    float: none !important;
-}
-
-.footer {
-    display: block !important;
-    float: none !important;
-}
-
-/* hide settings/login header */
-.header-wrapper, .header {
+/* hide un-necessary elements */
+.header-wrapper, .header, .shadow {
     display: none !important;
 }
 
-/* fix settings layout */
+/* let elements flow naturally */
+#container, .main, .main .tabs, .main .tabs > ul, .main .panel, .footer {
+    display: block !important;
+    float: none !important;
+    margin: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+}
+
+.main .tabs, .main .tabs > ul {
+    padding: 0 !important;
+}
+
 .main .tabs {
-    padding-top: 0 !important;
+    position: fixed !important;
+    overflow-y: auto !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    z-index: 2 !important;
+    width: 216px !important;
+    background: #eaeeef url("/redesign/global/img/settings-bg.jpeg") repeat top left !important;
+    border-right: 1px solid #bdbdbd !important;
 }
 
 .main .panel {
-    display: block !important;
-    float: right !important;
-    width: auto !important;
-    padding-top: 24px !important;
+    padding: 24px 32px 0 248px !important;
+    border: none !important;
+}
+
+.footer {
+    padding: 16px 0 16px 216px !important;
 }
