@@ -17,7 +17,7 @@
  */
 
 /* hide settings/login header and note toolbar */
-.header-wrapper, .header, body > div > div > div > div:nth-child(2) {
+.header-wrapper, .header, body > div > div > div > div:nth-child(2) > div[class^="G"] {
     display: none !important;
 }
 
