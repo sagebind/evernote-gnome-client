@@ -22,8 +22,8 @@ const Lang = imports.lang;
 const WebFrame = imports.WebFrame;
 
 
-const SettingsWindow = new Lang.Class({
-    Name: "SettingsWindow",
+const AccountSettingsWindow = new Lang.Class({
+    Name: "AccountSettingsWindow",
     Extends: Gtk.Window,
 
     _init: function(application)
@@ -42,7 +42,7 @@ const SettingsWindow = new Lang.Class({
         this.add(this._webFrame);
 
         // add custom css
-        this._webFrame.stylesheets.push("../data/settings.css");
+        this._webFrame.stylesheets.push("../data/account-settings.css");
 
         // load main evernote interface
         this._webFrame.navigate("https://www.evernote.com/Settings.action");

@@ -16,8 +16,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-imports.searchPath.unshift('.');
-const Application = imports.Application;
+.web-frame GtkScrolledWindow {
+    background-color: white;
+}
 
-let app = new Application.Application();
-app.run(ARGV);
+.loading {
+    opacity: 0.3;
+}

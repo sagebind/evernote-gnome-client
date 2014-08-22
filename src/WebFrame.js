@@ -32,15 +32,18 @@ const WebFrame = new Lang.Class({
     Extends: Gtk.Overlay,
     stylesheets: [],
 
-    _init: function()
+    _init: function(application)
     {
         this.parent();
+        this.application = application;
         this.get_style_context().add_class("web-frame");
 
         this._frame = new Gtk.ScrolledWindow();
         this.add(this._frame);
 
         this._webView = new WebKit.WebView();
+        this._webView.full_content_zoom = true;
+        this._webView.zoom_level = application.settings.dpiScale;
         this._webView.settings.enable_page_cache = true;
         this._webView.settings.enable_smooth_scrolling = true;
         this._webView.settings.enable_spell_checking = true;
@@ -120,7 +123,7 @@ const WebFrame = new Lang.Class({
 
         else if (webView.load_status < 2)
         {
-            this._showSpinner();
+            //this._showSpinner();
         }
     },
 

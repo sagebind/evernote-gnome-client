@@ -24,7 +24,7 @@ const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
 
 const MainWindow = imports.MainWindow;
-const SettingsWindow = imports.SettingsWindow;
+const AccountSettingsWindow = imports.AccountSettingsWindow;
 
 
 const Application = new Lang.Class({
@@ -38,7 +38,7 @@ const Application = new Lang.Class({
         GLib.set_application_name("Evernote");
 
         this.parent({
-            application_id: "org.coderstephen.evernote-gnome-client",
+            application_id: "com.coderstephen.EvernoteGnomeClient",
             flags: Gio.ApplicationFlags.FLAGS_NONE
         });
 
@@ -46,16 +46,16 @@ const Application = new Lang.Class({
         this._loadSettings();
 
         this.styles = new Gtk.CssProvider();
-        this.styles.load_from_path("../data/gtk-widgets3.css");
+        this.styles.load_from_path("../data/application.css");
 
         this.connect("startup", Lang.bind(this, this._onStartup));
         this.connect("activate", Lang.bind(this, this._onActivate));
     },
 
-    showSettings: function()
+    showAccountSettings: function()
     {
-        let settingsWindow = new SettingsWindow.SettingsWindow(this);
-        settingsWindow.show_all();
+        let accountWindow = new AccountSettingsWindow.AccountSettingsWindow(this);
+        accountWindow.show_all();
     },
 
     showAbout: function()
@@ -94,15 +94,15 @@ const Application = new Lang.Class({
     _initMenus: function()
     {
         let menu = new Gio.Menu();
-        menu.append("Settings", "app.settings");
+        menu.append("Account", "app.account");
         menu.append("Help", "app.help");
         menu.append("About", "app.about");
         menu.append("Quit","app.quit");
         this.set_app_menu(menu);
 
-        let settingsAction = new Gio.SimpleAction({ name: "settings" });
-        settingsAction.connect("activate", Lang.bind(this, this.showSettings));
-        this.add_action(settingsAction);
+        let accountSettingsAction = new Gio.SimpleAction({ name: "account" });
+        accountSettingsAction.connect("activate", Lang.bind(this, this.showAccountSettings));
+        this.add_action(accountSettingsAction);
 
         let aboutAction = new Gio.SimpleAction({ name: "help" });
         aboutAction.connect("activate", Lang.bind(this, this.showHelp));
@@ -129,7 +129,7 @@ const Application = new Lang.Class({
 
     _saveSettings: function()
     {
-        let result = GLib.file_set_contents("settings.json", JSON.stringify(this.settings));
+        let result = GLib.file_set_contents("settings.json", JSON.stringify(this.settings, null, 4));
     },
 
     _onStartup: function()

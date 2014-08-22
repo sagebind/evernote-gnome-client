@@ -73,7 +73,7 @@ const MainWindow = new Lang.Class({
         this._headerBar.pack_end(this._searchEntry);
 
         // create a web frame
-        this._webFrame = new WebFrame.WebFrame();
+        this._webFrame = new WebFrame.WebFrame(application);
         this.add(this._webFrame);
 
         // listen for popup requests

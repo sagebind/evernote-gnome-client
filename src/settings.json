@@ -1,1 +1,12 @@
-{"windowSize":[1366,741],"windowPosition":[0,27],"windowMaximized":false}
+{
+    "dpiScale": 1.2,
+    "windowSize": [
+        1920,
+        1050
+    ],
+    "windowPosition": [
+        0,
+        30
+    ],
+    "windowMaximized": false
+}
