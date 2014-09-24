@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Type=Application
+Name=Evernote
+Exec=/data/Home/Projects/evernote-gnome-client/src/evernote-gnome-client
+Path=/data/Home/Projects/evernote-gnome-client/src
+Icon=chrome-lbfehkoinhhcknnbdgnnmjhiladcgbol-Default
+Name[en_US]=Evernote

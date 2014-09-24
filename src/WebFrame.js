@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2014 Stephen Coakley <me@stephencoakley.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -43,7 +43,6 @@ const WebFrame = new Lang.Class({
 
         this._webView = new WebKit.WebView();
         this._webView.full_content_zoom = true;
-        this._webView.zoom_level = application.settings.dpiScale;
         this._webView.settings.enable_page_cache = true;
         this._webView.settings.enable_smooth_scrolling = true;
         this._webView.settings.enable_spell_checking = true;
@@ -75,9 +74,17 @@ const WebFrame = new Lang.Class({
         this._webView.load_uri(uri);
     },
 
-    refresh: function()
+    reload: function()
     {
         this._webView.refresh();
+    },
+
+    getZoomLevel: function() {
+        return this._webView.zoom_level;
+    },
+
+    setZoomLevel: function(zoomLevel) {
+        this._webView.zoom_level = zoomLevel;
     },
 
     _showSpinner: function()
@@ -130,7 +137,7 @@ const WebFrame = new Lang.Class({
     _onDocumentLoadFinished: function(webView, webFrame, userData)
     {
         this._hideSpinner();
-        this.emit("document-loaded");
+        this.emit("document-ready");
     },
 
     _onNewWindowRequested: function(webView, frame, request, navigationAction, policyDecision, userData)

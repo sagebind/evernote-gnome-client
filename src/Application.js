@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2014 Stephen Coakley <me@stephencoakley.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -28,7 +28,7 @@ const AccountSettingsWindow = imports.AccountSettingsWindow;
 
 
 const Application = new Lang.Class({
-    Name: "EvernoteGClient",
+    Name: "Application",
     Extends: Gtk.Application,
 
     _init: function()
@@ -38,18 +38,15 @@ const Application = new Lang.Class({
         GLib.set_application_name("Evernote");
 
         this.parent({
-            application_id: "com.coderstephen.EvernoteGnomeClient",
+            application_id: "com.stephencoakley.EvernoteGnomeClient",
             flags: Gio.ApplicationFlags.FLAGS_NONE
         });
 
         // load settings
         this._loadSettings();
 
-        this.styles = new Gtk.CssProvider();
-        this.styles.load_from_path("../data/application.css");
-
-        this.connect("startup", Lang.bind(this, this._onStartup));
-        this.connect("activate", Lang.bind(this, this._onActivate));
+        //this.connect("startup", Lang.bind(this, this._onStartup));
+        //this.connect("activate", Lang.bind(this, this._onActivate));
     },
 
     showAccountSettings: function()
@@ -132,13 +129,22 @@ const Application = new Lang.Class({
         let result = GLib.file_set_contents("settings.json", JSON.stringify(this.settings, null, 4));
     },
 
-    _onStartup: function()
+    _createWindow: function()
     {
+        this._mainWindow = new MainWindow.MainWindow(this);
+    },
+
+    vfunc_startup: function()
+    {
+        this.parent();
         this._initMenus();
 
         // create main window
-        this._mainWindow = new MainWindow.MainWindow(this);
-        
+        //this._mainWindow = new MainWindow.MainWindow(this);
+
+        this.styles = new Gtk.CssProvider();
+        this.styles.load_from_path("../data/application.css");
+
         let context = new Gtk.StyleContext();
         context.add_provider_for_screen(this._mainWindow.get_screen(), this.styles, Gtk.STYLE_PROVIDER_PRIORITY_USER);
 
@@ -149,8 +155,12 @@ const Application = new Lang.Class({
         this._mainWindow.connect("destroy", Lang.bind(this, this.quit));
     },
 
-    _onActivate: function()
+    vfunc_activate: function()
     {
+        if (!this._mainWindow)
+            this._createWindow();
+
         this._mainWindow.present();
+        this._mainWindow.show_all();
     }
 });

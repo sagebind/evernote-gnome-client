@@ -5,4 +5,4 @@ cd $DIR
 GJS_PATH=$DIR
 echo "Import path: $GJS_PATH"
 
-gjs "$DIR/main.js"
+gjs "$DIR/main.js" "$@"
