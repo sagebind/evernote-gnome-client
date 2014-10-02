@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema path="/com/stephencoakley/evernote-gnome-client/" id="com.stephencoakley.evernote-gnome-client">
+    <key name="dpi-scale" type="d">
+        <default>1.0</default>
+    </key>
+    <key name="window-size" type="(ii)">
+        <default>(1024,768)</default>
+        <summary>Pushbullet API Key</summary>
+        <description>Your Pushbullet API key.</description>
+    </key>
+    <key name="window-position" type="(ii)">
+        <default>(64,64)</default>
+    </key>
+    <key name="window-maximized" type="b">
+        <default>false</default>
+    </key>
+  </schema>
+</schemalist>

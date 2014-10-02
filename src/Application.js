@@ -25,6 +25,7 @@ const Lang = imports.lang;
 
 const MainWindow = imports.MainWindow;
 const AccountSettingsWindow = imports.AccountSettingsWindow;
+const Settings = imports.settings;
 
 
 const Application = new Lang.Class({
@@ -43,7 +44,8 @@ const Application = new Lang.Class({
         });
 
         // load settings
-        this._loadSettings();
+        //this._loadSettings();
+        this.settings = new Settings.Settings("com.stephencoakley.evernote-gnome-client");
 
         //this.connect("startup", Lang.bind(this, this._onStartup));
         //this.connect("activate", Lang.bind(this, this._onActivate));
@@ -85,7 +87,6 @@ const Application = new Lang.Class({
     quit: function()
     {
         this._mainWindow.destroy();
-        this._saveSettings();
     },
 
     _initMenus: function()
@@ -114,21 +115,6 @@ const Application = new Lang.Class({
         this.add_action(quitAction);
     },
 
-    _loadSettings: function()
-    {
-        let result = GLib.file_get_contents("settings.json");
-
-        if (result[0] == true)
-        {
-            this.settings = JSON.parse(String(result[1]));
-        }
-    },
-
-    _saveSettings: function()
-    {
-        let result = GLib.file_set_contents("settings.json", JSON.stringify(this.settings, null, 4));
-    },
-
     _createWindow: function()
     {
         this._mainWindow = new MainWindow.MainWindow(this);
@@ -140,6 +126,8 @@ const Application = new Lang.Class({
         this._initMenus();
 
         // create main window
+        if (!this._mainWindow)
+            this._createWindow();
         //this._mainWindow = new MainWindow.MainWindow(this);
 
         this.styles = new Gtk.CssProvider();
@@ -157,9 +145,6 @@ const Application = new Lang.Class({
 
     vfunc_activate: function()
     {
-        if (!this._mainWindow)
-            this._createWindow();
-
         this._mainWindow.present();
         this._mainWindow.show_all();
     }

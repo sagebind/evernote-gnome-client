@@ -41,15 +41,15 @@ const MainWindow = new Lang.Class({
         if (this.application.settings)
         {
             this.set_default_size(
-                this.application.settings.windowSize[0],
-                this.application.settings.windowSize[1]
+                this.application.settings.get("window-size")[0],
+                this.application.settings.get("window-size")[1]
             );
             this.move(
-                this.application.settings.windowPosition[0],
-                this.application.settings.windowPosition[1]
+                this.application.settings.get("window-position")[0],
+                this.application.settings.get("window-position")[1]
             );
 
-            if (this.application.settings.windowMaximized != false)
+            if (this.application.settings.get("window-maximized") != false)
             {
                 //this._window.maximize();
             }
@@ -74,7 +74,7 @@ const MainWindow = new Lang.Class({
 
         // create a web frame
         this._webFrame = new WebFrame.WebFrame(application);
-        this._webFrame.setZoomLevel(this.application.settings.dpiScale);
+        this._webFrame.setZoomLevel(this.application.settings.get("dpi-scale"));
         this.add(this._webFrame);
 
         // listen for popup requests
@@ -184,16 +184,16 @@ const MainWindow = new Lang.Class({
         let size = this.get_size();
         let position = this.get_position();
 
-        if (this.application.settings.windowSize[0] != size[0] || this.application.settings.windowSize[1] != size[1])
+        if (this.application.settings.get("window-size")[0] != size[0] || this.application.settings.get("window-size")[1] != size[1])
         {
             log("Window resized: " + size);
-            this.application.settings.windowSize = size;
+            this.application.settings.set("window-size", "(ii)", size);
         }
 
-        if (this.application.settings.windowPosition[0] != position[0] || this.application.settings.windowPosition[1] != position[1])
+        if (this.application.settings.get("window-position")[0] != position[0] || this.application.settings.get("window-position")[1] != position[1])
         {
             log("Window moved: " + position);
-            this.application.settings.windowPosition = position;
+            this.application.settings.set("window-position", "(ii)", position);
         }
     },
 
@@ -201,10 +201,14 @@ const MainWindow = new Lang.Class({
     {
         let state = this.get_state();
 
-        if (state & Gdk.WindowState.FULLSCREEN)
-            return;
+        if (state & Gdk.WindowState.MAXIMIZED) {
+            this._maximized = true;
+        }
+        else {
+            this._maximized = false;
+        }
 
-        this.application.settings.windowMaximized = Boolean(state & Gdk.WindowState.MAXIMIZED);
+        this.application.settings.set("window-maximized", "b", this._maximized);
     },
 
     _webView_onNavigationRequested: function(webView, frame, request, navigationAction, policyDecision, userData)
