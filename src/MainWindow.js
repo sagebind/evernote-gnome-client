@@ -68,7 +68,7 @@ const MainWindow = new Lang.Class({
         this._headerBar.pack_start(this._newNoteButton);
 
         this._searchEntry = new Gtk.SearchEntry();
-        this._searchEntry.width_request = 320;
+        this._searchEntry.width_request = 384;
         this._searchEntry.connect("search-changed", Lang.bind(this, this._onSearchChanged));
         this._headerBar.pack_end(this._searchEntry);
 
@@ -132,6 +132,8 @@ const MainWindow = new Lang.Class({
 
                     if (typeElement && valueElement)
                     {
+                        var typeText = typeElement.innerText.toLowerCase();
+
                         var valueText = String(valueElement.innerText);
                         if (valueText.indexOf(" ") > -1)
                         {
@@ -142,7 +144,16 @@ const MainWindow = new Lang.Class({
                         {
                             searchText += " ";
                         }
-                        searchText += typeElement.innerText.toLowerCase() + valueText;
+
+                        // fix inconsistent display for "any:" filter
+                        if (typeText == "match:")
+                        {
+                            searchText += "any:";
+                        }
+                        else
+                        {
+                            searchText += typeElement.innerText.toLowerCase() + valueText;
+                        }
                     }
                 }
             }

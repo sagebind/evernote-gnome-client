@@ -38,7 +38,7 @@ const Application = new Lang.Class({
         GLib.set_application_name("Evernote");
 
         this.parent({
-            application_id: "com.stephencoakley.EvernoteGnomeClient",
+            application_id: "com.stephencoakley.evernote-gnome-client",
             flags: Gio.ApplicationFlags.FLAGS_NONE
         });
 
