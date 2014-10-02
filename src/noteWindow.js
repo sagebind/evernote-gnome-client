@@ -19,7 +19,7 @@
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
 
-const WebFrame = imports.WebFrame;
+const WebFrame = imports.webFrame;
 
 
 const NoteWindow = new Lang.Class({

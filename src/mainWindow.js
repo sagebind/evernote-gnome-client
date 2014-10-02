@@ -22,8 +22,8 @@ const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
 
-const NoteWindow = imports.NoteWindow;
-const WebFrame = imports.WebFrame;
+const NoteWindow = imports.noteWindow;
+const WebFrame = imports.webFrame;
 
 
 const MainWindow = new Lang.Class({

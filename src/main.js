@@ -17,7 +17,7 @@
  */
 
 imports.searchPath.unshift('.');
-const Application = imports.Application;
+const Application = imports.application;
 
 function main()
 {

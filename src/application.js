@@ -16,15 +16,15 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-const Gettext = imports.gettext;
 const Gdk = imports.gi.Gdk;
+const Gettext = imports.gettext;
 const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
 
-const MainWindow = imports.MainWindow;
-const AccountSettingsWindow = imports.AccountSettingsWindow;
+const AccountSettings = imports.accountSettings;
+const MainWindow = imports.mainWindow;
 const Settings = imports.settings;
 
 
@@ -53,7 +53,7 @@ const Application = new Lang.Class({
 
     showAccountSettings: function()
     {
-        let accountWindow = new AccountSettingsWindow.AccountSettingsWindow(this);
+        let accountWindow = new AccountSettings.AccountSettingsWindow(this);
         accountWindow.show_all();
     },
 
